@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ParkFinder — remember where you parked</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="masthead"><div class="wrap"><a class="brand" href="#/home"><span class="brand-mark" aria-hidden="true">P</span> ParkFinder</a>
+<nav aria-label="Main" id="nav"><a href="#/home" data-nav="/home">Home</a><a href="#/save" data-nav="/save">Save spot</a><a href="#/find" data-nav="/find">Find vehicle</a><a href="#/how" data-nav="/how">How it works</a></nav></div></header>
+<main>
+<!-- ============================================================ HOME -->
+<section class="wrap stack-lg" data-view="/home" hidden>
+
+  <div class="hero">
+    <div>
+      <h1 tabindex="-1">Park, shop, and walk straight back to your car.</h1>
+      <p class="lede">Tap in your bay number when you arrive. Hours later, type your plate and ParkFinder tells you the floor, zone and bay.</p>
+      <div class="row">
+        <a class="btn btn-primary" href="#/save">Save my parking spot</a>
+        <a class="btn" href="#/find">Find my vehicle</a>
+      </div>
+    </div>
+
+    <div class="bay-hero">
+      <svg viewBox="0 0 420 324" role="img" aria-label="A parking bay numbered 84 with a car in it">
+        <defs>
+          <linearGradient id="roofLight" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#ffffff" stop-opacity=".35"/>
+            <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+
+        <rect x="0" y="0" width="420" height="120" fill="url(#roofLight)"/>
+
+        <!-- concrete pillar, to give the bay a place -->
+        <rect x="392" y="40" width="26" height="240" rx="3" fill="#b9c2cf"/>
+        <rect x="392" y="120" width="26" height="26" fill="#ffb703"/>
+
+        <g stroke="#ffffff" stroke-width="6" stroke-linecap="round" fill="none">
+          <path d="M30 60 V250"/><path d="M150 60 V250"/><path d="M270 60 V250"/><path d="M390 60 V250"/>
+          <path d="M30 58 H390"/>
+        </g>
+
+        <rect x="153" y="61" width="114" height="188" fill="#ffb703"/>
+        <text x="210" y="96" text-anchor="middle" font-family="'Arial Narrow',sans-serif" font-weight="700" font-size="38" fill="#16233d" letter-spacing="1">84</text>
+
+        <ellipse cx="212" cy="244" rx="52" ry="12" fill="#16233d" opacity=".18"/>
+        <g>
+          <rect x="168" y="112" width="84" height="128" rx="17" fill="#16233d"/>
+          <path d="M176 142 H244 l-7 22 H183 Z" fill="#4a5a7a"/>
+          <path d="M180 216 H240 l6-18 H174 Z" fill="#4a5a7a"/>
+          <rect x="160" y="150" width="9" height="16" rx="3" fill="#16233d"/>
+          <rect x="251" y="150" width="9" height="16" rx="3" fill="#16233d"/>
+          <circle cx="182" cy="123" r="4" fill="#ffe9a8"/><circle cx="238" cy="123" r="4" fill="#ffe9a8"/>
+        </g>
+
+        <path d="M34 302 H210 V252" fill="none" stroke="#16233d" stroke-width="6" stroke-linecap="round" stroke-dasharray="12 10"/>
+        <circle cx="34" cy="302" r="9" fill="#16233d" stroke="#fff" stroke-width="3"/>
+        <rect x="46" y="258" width="152" height="30" rx="8" fill="#16233d"/>
+        <text x="122" y="279" text-anchor="middle" font-family="-apple-system,sans-serif" font-weight="600" font-size="16" fill="#ffffff">B2 · Zone B</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="recall" id="recall" hidden>
+    <span class="code" id="recall-plate">—</span>
+    <span id="recall-where"></span>
+    <a id="recall-link" href="#/details">View spot</a>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel stack">
+      <h2>Save a spot in three taps</h2>
+      <p>Choose your mall, floor, zone and bay, add the plate, and tick car wash or EV charging if you need them. Nothing leaves your phone — ParkFinder stores it in your browser.</p>
+      <p><a href="#/save">Save my parking spot</a></p>
+    </div>
+    <div class="panel stack">
+      <h2>Find it by plate</h2>
+      <p>Type the registration number. You get the mall, floor, zone and bay. Unknown plates come back as not found.</p>
+      <p><a href="#/find">Find my vehicle</a></p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <h2>Saved on this device</h2>
+      <a class="small" href="#/save">Add another</a>
+    </div>
+    <ul class="saved-list" id="saved-list"></ul>
+    <div class="empty" id="saved-empty" hidden><p>No vehicles saved on this device yet. Save a parking spot and it will show up here.</p></div>
+  </div>
+
+</section>
+
+<section class="wrap stack-lg" data-view="/save" hidden>
+<div class="stack"><h1 tabindex="-1">Save your parking spot</h1><p class="lede">Do this before you walk into the mall. It takes about fifteen seconds.</p></div>
+<div class="grid-2"><form class="panel" id="save-form" novalidate>
+<div class="notice notice-stop" id="save-error" hidden style="margin-bottom:1rem"><h3>Check the registration number</h3><p class="small">Use the format on the plate, such as GJ 05 AB 1234.</p></div>
+<label class="field" for="plate"><span>Registration number</span><input class="plate-input" id="plate" type="text" autocomplete="off" spellcheck="false" placeholder="GJ 05 AB 1234" maxlength="13"></label>
+<p class="hint">Typing is fastest. <button type="button" class="btn btn-quiet" id="scan" style="padding:.3rem .6rem;font-size:.85rem;margin-left:.3rem">Scan plate (demo)</button></p>
+<label class="field" for="mall"><span>Mall</span><select id="mall"></select></label>
+<div class="field-pair" style="margin-top:1.05rem">
+<label class="field" for="floor"><span>Floor</span><select id="floor"></select></label>
+<label class="field" for="zone"><span>Zone</span><select id="zone"></select></label>
+<label class="field" for="bay"><span>Bay</span><select id="bay"></select></label></div>
+<p class="hint" id="bay-range"></p>
+<fieldset class="extras"><legend>Optional services</legend>
+<label class="check"><input type="checkbox" id="wash"><span>Car washing</span></label>
+<label class="check"><input type="checkbox" id="ev"><span>EV charging</span></label></fieldset>
+<label class="field" for="note"><span>Landmark nearby (optional)</span><input id="note" type="text" placeholder="Near the lift" maxlength="60"></label>
+<div class="form-actions"><button class="btn btn-signal" type="submit">Save parking spot</button><a class="btn btn-quiet" href="#/home">Cancel</a></div>
+</form>
+<div class="panel"><div class="panel-head"><h2>Tap your bay</h2><span class="small muted" id="pick-readout"></span></div>
+<figure class="map"><div id="pick-map"></div><figcaption>Simplified plan of the selected floor. Tap a bay to fill in the zone and number, or use the dropdowns.</figcaption></figure>
+<div class="legend"><span><i class="is-free"></i> bay</span><span><i class="is-car"></i> your bay</span></div></div></div></section>
+<!-- ============================================================ FIND -->
+<section class="wrap stack-lg" data-view="/find" style="max-width:660px" hidden>
+
+  <div class="stack">
+    <h1 tabindex="-1">Find my vehicle</h1>
+    <p class="lede">Type the registration number you saved. Try the demo plate GJ 05 AB 1234.</p>
+  </div>
+
+  <form class="panel stack" id="find-form" novalidate>
+    <label class="field" for="find-plate">
+      <span>Registration number</span>
+      <input class="plate-input" id="find-plate" type="text" autocomplete="off" spellcheck="false" placeholder="GJ 05 AB 1234" maxlength="13">
+    </label>
+    <button class="btn btn-primary btn-wide" type="submit">Show my parking spot</button>
+  </form>
+
+  <div class="notice notice-stop" id="not-found" hidden>
+    <h3>Vehicle not found</h3>
+    <p class="small">Nothing is saved for <strong id="not-found-plate"></strong> on this device. Check the number, or
+      <a id="not-found-save" href="#/save">save this vehicle now</a>.</p>
+  </div>
+
+  <div class="panel" id="find-recent" hidden>
+    <div class="panel-head"><h2>Recently saved</h2></div>
+    <div class="row" id="find-recent-row"></div>
+  </div>
+
+</section>
+
+<section class="wrap stack-lg" data-view="/details" hidden>
+<div class="notice notice-stop" id="d-missing" hidden><h3>No parking spot to show</h3><p class="small">Nothing is saved for that vehicle. <a href="#/find">Search by plate</a> or <a href="#/save">save a spot</a>.</p></div>
+<div class="notice notice-go" id="d-confirm" hidden data-d><h3>Parking spot saved</h3><p class="small">Enjoy your shopping. Come back here, or search your plate, when you are ready to leave.</p></div>
+<div class="stack" data-d><span class="plate-badge code" id="d-plate">—</span><h1 tabindex="-1" style="margin-top:.6rem">Bay <span class="code" id="d-bay">—</span></h1><p class="lede" id="d-mall"></p></div>
+<dl class="facts facts-3" data-d><div><dt>Floor</dt><dd class="code" id="d-floor">—</dd></div><div><dt>Zone</dt><dd class="code" id="d-zone">—</dd></div><div><dt>Bay</dt><dd class="code" id="d-bay2">—</dd></div></dl>
+<div class="panel" data-d><div class="panel-head"><h2>Where it is</h2></div>
+<figure class="map"><div id="detail-map"></div><figcaption id="detail-cap"></figcaption></figure>
+<div class="legend"><span><i class="is-you"></i> lifts, start of route</span><span><i class="is-car"></i> your vehicle</span><span><i class="is-taken"></i> other vehicles</span></div></div>
+<div class="grid-2" data-d>
+<div class="panel stack"><h2>How to get there</h2><p id="d-dir"></p><div><p class="small muted">Services</p><div id="d-services"></div></div></div>
+<div class="panel stack"><h2>Details</h2><dl class="stack" style="margin:0">
+<div><dt class="small muted">Parked at</dt><dd style="margin:0" id="d-saved">—</dd></div>
+<div><dt class="small muted">Landmark</dt><dd style="margin:0" id="d-note">—</dd></div>
+<div><dt class="small muted">Stored</dt><dd style="margin:0">On this device, works offline</dd></div></dl>
+<div class="form-actions"><a class="btn btn-quiet" href="#/find">Find another</a><button class="btn btn-quiet" type="button" id="d-clear">Clear this spot</button></div></div>
+</div></section>
+<section class="wrap stack-lg" data-view="/how" style="max-width:780px" hidden>
+<div class="stack"><h1 tabindex="-1">How it works</h1><p class="lede">Six steps, start to finish.</p></div>
+<div class="panel"><ol class="steps">
+<li><strong>Park and note your bay</strong><span class="dist">Look for the bay number painted on the pillar or floor.</span></li>
+<li><strong>Open Save spot</strong><span class="dist">Choose Palladium Mall, Alpha Mall or TRP Mall.</span></li>
+<li><strong>Enter the plate, floor, zone and bay</strong><span class="dist">Zones and bay numbers change with the mall you pick.</span></li>
+<li><strong>Tick optional services</strong><span class="dist">Car washing or EV charging, only if you need them.</span></li>
+<li><strong>Go shopping</strong><span class="dist">The spot stays on your phone until you clear it.</span></li>
+<li><strong>Search your plate on the way out</strong><span class="dist">You get the floor, zone and bay. Unknown plates show “Vehicle not found”.</span></li></ol></div>
+<div class="grid-2"><div class="panel stack"><h2>Works offline</h2><p>Everything runs on your device. No account, no server, no signal needed in the basement. Install it to your home screen once and it opens like an app.</p></div>
+<div class="panel stack"><h2>Where your data lives</h2><p>Saved in this browser only. Clearing site data, or using another phone or browser, means the spot will not be found.</p></div></div>
+</section>
+</main>
+<footer class="footer"><div class="wrap"><span>ParkFinder works offline. Spots are saved on this device only.</span><a href="#/how">How it works</a></div></footer>
+<script src="app.js"></script>
+</body>
+</html>
